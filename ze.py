@@ -1,48 +1,74 @@
 import os
 import zipfile
 import argparse
+import re
+import shutil
+
+def extract_person_name(filename):
+    # Extract the person's name (all text up to the first number)
+    match = re.search(r'^([^\d]+)', filename)
+    if match:
+        return match.group(1).strip().replace('_', '')
+    return None
+
+def get_top_level_folders(zip_file):
+    top_level = set()
+    for name in zip_file.namelist():
+        parts = name.split('/')
+        if len(parts) > 1:
+            top_level.add(parts[0])
+    return top_level
 
 def process_zip_file(main_zip_path, output_dir):
-    # Create the output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Open the main zip file
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)    # Open the main zip file
     with zipfile.ZipFile(main_zip_path, 'r') as main_zip:
-        # Iterate through all files in the main zip
-        for file_name in main_zip.namelist():
-            print(file_name)
-            if file_name.endswith('.zip'):
-                # Extract the person's name from the zip file name
-                person_name = os.path.splitext(file_name)[0]
-                print(person_name)
-                
-                # Extract the individual zip file
-                main_zip.extract(file_name, output_dir)
-                individual_zip_path = os.path.join(output_dir, file_name)
-                
-                # Open the individual zip file
-                with zipfile.ZipFile(individual_zip_path, 'r') as individual_zip:
-                    # Find the PDF file
-                    pdf_files = [f for f in individual_zip.namelist() if f.lower().endswith('.pdf')]
-                    
-                    if pdf_files:
-                        # Extract and rename the PDF file
-                        pdf_file = pdf_files[0]
-                        individual_zip.extract(pdf_file, output_dir)
-                        old_pdf_path = os.path.join(output_dir, pdf_file)
-                        new_pdf_path = os.path.join(output_dir, f"{person_name}.pdf")
-                        os.rename(old_pdf_path, new_pdf_path)
-                
-                # Remove the individual zip file
-                os.remove(individual_zip_path)
+        # Get top-level folders
+        top_level_folders = get_top_level_folders(main_zip)
+
+        for folder_name in top_level_folders:
+            # Extract the person's name from the folder name
+            person_name = extract_person_name(folder_name)
+            if not person_name:
+                print(f"Skipping {folder_name}: Unable to extract person's name")
+                continue
+            
+            # Create a temporary directory for extraction
+            temp_dir = os.path.join(output_dir, 'temp_extraction')
+            os.makedirs(temp_dir, exist_ok=True)
+            
+            # Extract the folder contents
+            folder_contents = [f for f in main_zip.namelist() if f.startswith(f"{folder_name}/")]
+            for file in folder_contents:
+                main_zip.extract(file, temp_dir)
+            
+            # Find PDF or HTML files in the extracted folder
+            extracted_folder_path = os.path.join(temp_dir, folder_name)
+            target_files = [f for f in os.listdir(extracted_folder_path) 
+                            if f.lower().endswith(('.pdf', '.html'))]
+            
+            if target_files:
+                # Rename and move the first found file
+                target_file = target_files[0]
+                file_extension = os.path.splitext(target_file)[1]
+                old_file_path = os.path.join(extracted_folder_path, target_file)
+                new_file_path = os.path.join(output_dir, f"{person_name}{file_extension}")
+                shutil.move(old_file_path, new_file_path)
+                print(f"Extracted and renamed: {new_file_path}")
+            else:
+                print(f"No PDF or HTML file found in {folder_name}")
+            
+            # Clean up the temporary directory
+            shutil.rmtree(temp_dir)
 
     print(f"Processing complete. Output directory: {output_dir}")
 
 def main():
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Process a zip file containing multiple zip files with PDFs.")
-    parser.add_argument("input_zip", help="Path to the input zip file")
-    parser.add_argument("output_dir", help="Path to the output directory")
+    parser = argparse.ArgumentParser(description="Process a zip file containing folders with PDFs or HTML files.")
+    parser.add_argument("-i", "--input_zip", default="unzip.zip", help="Path to the input zip file (default: unzip.zip)")
+    parser.add_argument("-o", "--output_dir", default="out", help="Path to the output directory (default: out)")
     
     # Parse arguments
     args = parser.parse_args()
