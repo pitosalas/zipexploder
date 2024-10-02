@@ -3,6 +3,8 @@ import zipfile
 import argparse
 import re
 import shutil
+import sys
+
 
 def extract_person_name(filename):
     # Extract the person's name (all text up to the first number)
@@ -65,17 +67,37 @@ def process_zip_file(main_zip_path, output_dir):
     print(f"Processing complete. Output directory: {output_dir}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Process a zip file containing folders with PDFs or HTML files.")
-    parser.add_argument("input_zip", nargs='?', default="ze.zip", help="Path to the input zip file (default: ze.zip)")
+    # Set up argument parser with a more detailed description
+    parser = argparse.ArgumentParser(
+        description="""
+        Process a zip file containing folders with PDFs or HTML files.
+        
+        This script takes a zip file as input, where the zip file contains multiple folders.
+        Each folder is expected to be named after a person and contain either a PDF or HTML file.
+        The script will extract these files, rename them based on the folder name (up to the first number),
+        and place them in a new directory.
+        
+        The output directory is automatically named by appending 'out' to the input filename (without extension).
+        For example, if the input is 'myarchive.zip', the output directory will be 'myarchiveout'.
+        
+        If no input file is specified, the default 'ze.zip' will be used.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_zip", nargs='?', default="ze.zip", 
+                        help="Path to the input zip file (default: ze.zip)")
     
     # Parse arguments
     args = parser.parse_args()
 
+    # If no arguments are provided (sys.argv[1:] is empty), print help message and exit
+    if not sys.argv[1:]:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
     # Generate output directory name
     input_name = os.path.splitext(args.input_zip)[0]
-    output_dir = f"{input_name}out"
-
-
+    output_dir = f"{input_name}_output"
     # Call the process_zip_file function with the provided arguments
     process_zip_file(args.input_zip, output_dir)
 
