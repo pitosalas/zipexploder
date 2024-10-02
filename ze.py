@@ -65,16 +65,19 @@ def process_zip_file(main_zip_path, output_dir):
     print(f"Processing complete. Output directory: {output_dir}")
 
 def main():
-    # Set up argument parser
     parser = argparse.ArgumentParser(description="Process a zip file containing folders with PDFs or HTML files.")
-    parser.add_argument("-i", "--input_zip", default="unzip.zip", help="Path to the input zip file (default: unzip.zip)")
-    parser.add_argument("-o", "--output_dir", default="out", help="Path to the output directory (default: out)")
+    parser.add_argument("input_zip", nargs='?', default="ze.zip", help="Path to the input zip file (default: ze.zip)")
     
     # Parse arguments
     args = parser.parse_args()
 
+    # Generate output directory name
+    input_name = os.path.splitext(args.input_zip)[0]
+    output_dir = f"{input_name}out"
+
+
     # Call the process_zip_file function with the provided arguments
-    process_zip_file(args.input_zip, args.output_dir)
+    process_zip_file(args.input_zip, output_dir)
 
 if __name__ == "__main__":
     main()
