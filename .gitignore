@@ -1,0 +1,12 @@
+# Ignore everything
+*
+
+# But not .py files and .gitignore
+!*.py
+!.gitignore
+
+# Even if they are in subdirectories
+!*/
+
+# Ignore __pycache__ directories
+__pycache__/
