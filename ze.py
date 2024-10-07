@@ -21,7 +21,7 @@ def get_top_level_folders(zip_file):
 
 def process_file(file_path, submitter_name, output_dir):
     file_extension = os.path.splitext(file_path)[1].lower()
-    if file_extension in ['.pdf', '.html']:
+    if file_extension in ['.pdf', '.html', '.py', '.md']:
         new_file_path = os.path.join(output_dir, f"{submitter_name}{file_extension}")
         shutil.move(file_path, new_file_path)
         print(f"Moved file: {new_file_path}")
@@ -69,13 +69,14 @@ def process_zip_file(main_zip_path, output_dir):
 def main():
     parser = argparse.ArgumentParser(
         description="""
-        Process a zip file containing folders with PDFs, HTML files, or ZIP files.
+        Process a zip file containing folders with PDFs, HTML, Python, Markdown, or ZIP files.
         
         This script takes a zip file as input, where the zip file contains multiple folders.
         Each folder is expected to be named with a submitter's name followed by an underscore and additional information.
         The script will process files from these folders as follows:
-        - PDF and HTML files will be renamed based on the submitter's name and moved to the output directory.
+        - PDF, HTML, Python (.py), and Markdown (.md) files will be renamed based on the submitter's name and moved to the output directory.
         - ZIP files will be extracted into a folder named after the submitter in the output directory.
+        - Other file types will be skipped.
         
         The output directory is automatically named by appending 'out' to the input filename (without extension).
         For example, if the input is 'myarchive.zip', the output directory will be 'myarchiveout'.
