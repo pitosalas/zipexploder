@@ -5,8 +5,5 @@
 !*.py
 !.gitignore
 
-# Even if they are in subdirectories
-!*/
-
 # Ignore __pycache__ directories
 __pycache__/
