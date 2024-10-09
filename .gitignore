@@ -1,11 +1,19 @@
 # Ignore everything
 *
 
-# But not .py files and .gitignore
+# But not these files...
 !*.py
-!.gitignore
 !*.md
-!/dist/*
+!.gitignore
 
-# Ignore __pycache__ directories
-__pycache__/
+# ...even if they are in subdirectories
+!*/
+
+# Ignore everything in the root except the "dist" directory
+/*
+!/dist/
+
+# Ignore everything in the dist directory except .py and .md files
+/dist/*
+!/dist/**/*.py
+!/dist/**/*.md
