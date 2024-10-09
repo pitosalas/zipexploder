@@ -4,6 +4,7 @@
 # But not .py files and .gitignore
 !*.py
 !.gitignore
+!*.md
 
 # Ignore __pycache__ directories
 __pycache__/
