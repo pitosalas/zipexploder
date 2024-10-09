@@ -53,6 +53,14 @@ This will create a directory named `assignment_submissionsout` containing the pr
 - The script assumes that each submission folder in the Moodle zip file is named with the submitter's name followed by an underscore and additional information.
 - Any existing output directory will be deleted and recreated during processing.
 
+## Building an executatble
+
+You can use this command to create a Mac executable:
+
+```
+pyinstaller --onefile ze.py
+```
+
 ## Troubleshooting
 
 If you encounter any issues:
