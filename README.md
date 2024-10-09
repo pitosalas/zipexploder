@@ -43,7 +43,7 @@ This program was written collaboratively by Claude.ai and Pito Salas.
 If you have a file named `assignment_submissions.zip`:
 
 ```
-python moodle_submission_processor.py assignment_submissions.zip
+python3 ze.py assignment_submissions.zip
 ```
 
 This will create a directory named `assignment_submissionsout` containing the processed files.

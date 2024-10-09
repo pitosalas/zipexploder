@@ -12,6 +12,9 @@ def extract_submitter_name(filename):
     return None
 
 def get_top_level_folders(zip_file):
+    """
+    Returns a set of unique top-level folder names in the given zip file.
+    """
     top_level = set()
     for name in zip_file.namelist():
         parts = name.split('/')
