@@ -17,3 +17,4 @@
 /dist/*
 !/dist/**/*.py
 !/dist/**/*.md
+!/dist/**/ze
