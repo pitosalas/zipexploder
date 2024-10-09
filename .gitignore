@@ -5,6 +5,7 @@
 !*.py
 !.gitignore
 !*.md
+!dist/ze
 
 # Ignore __pycache__ directories
 __pycache__/
